@@ -39,6 +39,7 @@ export const signup = async(req:Request, res:Response) => {
 
     if(newUser) {
       // generate toekn
+      generateToken(newUser.id)
 
       res.status(201).json({
         id: newUser.id,
@@ -64,3 +65,4 @@ export const login = async(req:Request, res:Response) => {
 }
 
 export const logout = async(req:Request, res:Response) => {}
+
