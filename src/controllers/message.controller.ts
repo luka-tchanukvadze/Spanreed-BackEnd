@@ -59,7 +59,29 @@ export const sendMessage = async (req: Request, res: Response): Promise<any> => 
 
 export const getMessages = async(req: Request, res: Response): Promise<any> => {
   try {
-    const { id: userToChatId }
+    const { id: userToChatId } = req.params
+    const senderId = req.user.id
+
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        participantsIds: {
+          hasEvery: [senderId, userToChatId]
+        }
+      }, 
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc'
+          }
+        }
+      }
+    })
+
+    if(!conversation){
+      return res.status(200).json([])
+    }
+
+    res.status(200).json(conversation.messages)
   } catch (error: any) {
     console.error('Error in getMessages: ', error.message)
     res.status(500).json({
